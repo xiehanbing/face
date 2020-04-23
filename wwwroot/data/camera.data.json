@@ -1,0 +1,77 @@
+{
+  "data": [
+    {
+      "name": "总部",
+      "parent": 0,
+      "id": "1",
+      "pid": "0",
+      "children": [
+        {
+          "id": "11",
+          "code": "sys-camera-1",
+          "name": "11相机2",
+          "prefix": "wwwroot/image/camera_icon.png",
+          "pid": "1",
+          "camera": 1
+        },
+        {
+          "id": "12",
+          "code": "sys-camera-2",
+          "name": "16相机",
+          "prefix": "wwwroot/image/camera_icon.png",
+          "pid": "1",
+          "camera": 1
+        },
+        {
+          "id": "13",
+          "code": "sys-camera-3",
+          "name": "17相机",
+          "prefix": "wwwroot/image/camera_icon.png",
+          "pid": "1",
+          "camera": 1
+        },
+        {
+          "id": "14",
+          "code": "sys-camera-4",
+          "name": "11相机2",
+          "prefix": "wwwroot/image/camera_icon.png",
+          "pid": "1",
+          "camera": 1
+        },
+        {
+          "id": "15",
+          "code": "sys-camera-5",
+          "name": "18相机",
+          "prefix": "wwwroot/image/camera_icon.png",
+          "pid": "1",
+          "camera": 1
+        },
+        {
+          "id": "16",
+          "code": "sys-camera-6",
+          "name": "19相机",
+          "prefix": "wwwroot/image/camera_icon.png",
+          "pid": "1",
+          "camera": 1
+        },
+        {
+          "id": "17",
+          "code": "sys-camera-7",
+          "name": "20相机",
+          "prefix": "wwwroot/image/camera_icon.png",
+          "pid": "1",
+          "camera": 1
+        },
+        {
+          "id": "18",
+          "code": "sys-camera-8",
+          "name": "21相机",
+          "prefix": "wwwroot/image/camera_icon.png",
+          "pid": "1",
+          "camera": 1
+        }
+      ]
+    }
+  ],
+  "status": true
+}

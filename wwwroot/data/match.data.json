@@ -1,0 +1,88 @@
+{
+  "data": {
+    "list": [
+      {
+        "name": "68相机1",
+        "id": "1",
+        "code": "1",
+        "url": "/wwwroot/image/demo.png",
+        "similarity": "99.99",
+        "time": "2020-04-24 17:50:26"
+      },
+      {
+        "name": "67相机",
+        "id": "18",
+        "code": "18",
+        "url": "/wwwroot/image/demo.png",
+        "similarity": "98",
+        "time": "2020-04-24 17:50:26"
+      },
+      {
+        "name": "66相机",
+        "id": "17",
+        "code": "17",
+        "url": "/wwwroot/image/demo.png",
+        "similarity": "97",
+        "time": "2020-04-24 17:50:26"
+      },
+      {
+        "name": "65相机",
+        "id": "16",
+        "code": "16",
+        "url": "/wwwroot/image/demo.png",
+        "similarity": "96",
+        "time": "2020-04-24 17:50:26"
+      },
+      {
+        "name": "64相机",
+        "id": "15",
+        "code": "15",
+        "url": "/wwwroot/image/demo.png",
+        "similarity": "95",
+        "time": "2020-04-24 17:50:26"
+      },
+      {
+        "name": "63相机",
+        "id": "14",
+        "code": "14",
+        "url": "/wwwroot/image/demo.png",
+        "similarity": "95.99",
+        "time": "2020-04-24 17:50:26"
+      },
+      {
+        "name": "62相机",
+        "id": "13",
+        "code": "13",
+        "url": "/wwwroot/image/demo.png",
+        "similarity": "94.65",
+        "time": "2020-04-24 17:50:26"
+      },
+      {
+        "name": "61相机",
+        "id": "12",
+        "code": "12",
+        "url": "/wwwroot/image/demo.png",
+        "similarity": "93.99",
+        "time": "2020-04-24 17:50:26"
+      },
+      {
+        "name": "60相机",
+        "id": "11",
+        "code": "11",
+        "url": "/wwwroot/image/demo.png",
+        "similarity": "92.99",
+        "time": "2020-04-24 17:50:26"
+      },
+      {
+        "name": "70相机",
+        "id": "10",
+        "code": "10",
+        "url": "/wwwroot/image/demo.png",
+        "similarity": "100",
+        "time": "2020-04-24 17:50:26"
+      }
+    ],
+    "total": 10
+  },
+  "status": true
+}

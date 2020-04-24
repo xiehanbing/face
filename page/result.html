@@ -3,10 +3,6 @@
 
 <head>
     <link href="/wwwroot/lib/jquery-ui-1.12.1/jquery-ui.css" rel="stylesheet" type="text/css" />
-    <!-- <link href="/wwwroot/lib/checkbox/css/googleapis.css" rel="stylesheet" type="text/css" /> -->
-    <!-- <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&subset=latin,latin-ext' rel='stylesheet'> -->
-    <!-- <link href="/wwwroot/lib/checkbox/css/demo.css?v=0.7.1" rel="stylesheet"> -->
-    <!-- <link href="/wwwroot/lib/checkbox/skins/all.css?v=0.7.1" rel="stylesheet"> -->
     <link href="/wwwroot/project/result/index.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="/wwwroot/lib/honeySwitch/lib/honeySwitch.css">
 
@@ -89,6 +85,10 @@
 <script src="/wwwroot/lib/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
 <script src="/wwwroot/lib//jquery-ui-1.12.1/jquery-ui.js" type="text/javascript"></script>
 <script src="/wwwroot/lib/honeySwitch/lib/honeySwitch.js" type="text/javascript"></script>
+<script type="text/javascript" src="/wwwroot/lib/axios/polyfill.min.js"></script>
+<script type="text/javascript" src="/wwwroot/lib/axios/axios.min.js"></script>
+<script type="text/javascript" src="/wwwroot/lib/axios/my.axios.js" charset="utf8"></script>
+<script type="text/javascript" src="/wwwroot/lib/message/MsgBox.js" charset="utf8"></script>
 <script type="text/javascript" src="/wwwroot/project/result/index.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
@@ -102,7 +102,7 @@
             this.renderImageLevel();
             this.initExport();
             this.initLocus();
-            this.renderTable();
+            this.getTable();
         },
         initLocus: function () {
             $('.tool-btn-locus').click(function (event) {
@@ -127,16 +127,27 @@
                 console.log('关闭了');
             });
         },
-        renderTable: function () {
+        getTable: function () {
+            var that = this;
+            $.axios('/wwwroot/data/match.data.json')
+                .then(function (response) {
+                    var data = response.data.data;
+                    var list = data.list;
+                    var total = data.total;
+                    that.renderTable(list);
+                });
+        },
+        renderTable: function (list) {
             var fullHtml = '';
-            for (var i = 0; i <= 9; i++) {
-                var detail = {
-                    url: '/wwwroot/image/demo.png',
-                    name: '68相机' + (i + 1),
-                    time: '2020-4-20 11:48:02',
-                    matchResult: (98.65 - i)
-                };
-                var matchResult = detail.matchResult;
+            for (var i = 0; i < list.length; i++) {
+                var detail = list[i];
+                // var detail = {
+                //     url: '/wwwroot/image/demo.png',
+                //     name: '68相机' + (i + 1),
+                //     time: '2020-4-20 11:48:02',
+                //     matchResult: (98.65 - i)
+                // };
+                var matchResult = detail.similarity;
                 var matchFirst, matchSecond;
                 if (matchResult == null) {
                     matchFirst = "00";

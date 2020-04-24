@@ -7,6 +7,7 @@ body {
     height: calc(100vh); */
     /* background-color: rgba(0, 0, 0, 0.5); */
     background: url(../../image/home_bg.jpg) no-repeat;
+    font-family: MicrosoftYaHei;
 }
 
 /* 主box */
@@ -74,11 +75,12 @@ body {
 }
 
 .show-image-level {
-    zoom: 0.67;
+    /* zoom: 0.67; */
     /* line-height: 35px;
     transform-origin: center; */
     margin-top: 10px;
     margin-left: 10px;
+    /* transform: scale(0.67, 0.67); */
 }
 
 .show-image-level-title {

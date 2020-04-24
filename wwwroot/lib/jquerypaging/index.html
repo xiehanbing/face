@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>js无刷新分页</title>
+    <script src="https://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+    <script src="js.js" charset="UTF-8"></script>
+</head>
+
+<body>
+    <!--分页控件-->
+    <div id="pageParent" class="pageParent">
+    </div>
+    <!--分页控件-->
+    <div id="pageParent111" class="pageParent">
+    </div>
+    <!--分页控件-->
+    <div id="pageParent222" class="pageParent">
+    </div>
+    <h1></h1>
+    <input type="button" value="加载分页" onclick="dian()" />
+    <script>
+        var runCallback1 = null;
+        var runCallback2 = null;
+        var runCallback3 = null;
+
+        new dmm({
+            // index: 1,//当前页面                         默认1
+            cssStyle: 3, //控件样式                       默认1
+            // size: [10, 20, 30],//每页显示条数           默认[10,20]
+            // skip: true,//是否显示跳转功能               默认不显示
+            // setSize: true,//是否显示下拉框              默认不显示
+            container: "pageParent", //控件容器id
+            //回掉函数，一般就是post请求后台方法得到分页数据加载到页面上
+            callback: function (e) {
+                e.index; //当前页
+                e.pageSize1; //页面显示条数
+                //以上两个属性可以当作请求后台时传入的参数
+
+
+
+                //以下三行在加载完页面后必须填写
+                e.countpage = Math.ceil(150 / e.pageSize1); //注意必写（数据总页数——通过后台方法获取）
+                e.infocount = 150; //注意必写（数据总条数——通过后台方法获取）
+                xian(e); //注意必写（加载控件）
+                //
+                //可将以下代码用于查询使用--联合dian()方法
+                runCallback1 = e; //将分页条件赋值变量
+            }
+        });
+        new dmm({
+            // index: 1,//当前页面                         默认1
+            cssStyle: 3, //控件样式                       默认1
+            // size: [10, 20, 30],//每页显示条数           默认[10,20]
+            skip: true, //是否显示跳转功能               默认不显示
+            // setSize: true,//是否显示下拉框              默认不显示
+            container: "pageParent111", //控件容器id
+            //回掉函数，一般就是post请求后台方法得到分页数据加载到页面上
+            callback: function (e) {
+                e.index; //当前页
+                e.pageSize1; //页面显示条数
+                //以上两个属性可以当作请求后台时传入的参数
+
+
+
+                //以下三行在加载完页面后必须填写
+                e.countpage = Math.ceil(150 / e.pageSize1); //注意必写（数据总页数——通过后台方法获取）
+                e.infocount = 150; //注意必写（数据总条数——通过后台方法获取）
+                xian(e); //注意必写（加载控件）
+
+                //
+                //可将以下代码用于查询使用--联合dian()方法
+                runCallback2 = e; //将分页条件赋值变量
+            }
+        });
+        new dmm({
+            // index: 1,//当前页面                         默认1
+            cssStyle: 3, //控件样式                       默认1
+            // size: [10, 20, 30],//每页显示条数           默认[10,20]
+            skip: true, //是否显示跳转功能               默认不显示
+            setSize: true, //是否显示下拉框              默认不显示
+            container: "pageParent222", //控件容器id
+            //回掉函数，一般就是post请求后台方法得到分页数据加载到页面上
+            callback: function (e) {
+                e.index; //当前页
+                e.pageSize1; //页面显示条数
+                //以上两个属性可以当作请求后台时传入的参数
+
+
+
+                //以下三行在加载完页面后必须填写
+                e.countpage = Math.ceil(150 / e.pageSize1); //注意必写（数据总页数——通过后台方法获取）
+                e.infocount = 150; //注意必写（数据总条数——通过后台方法获取）
+                xian(e); //注意必写（加载控件）
+                //
+                //可将以下代码用于查询使用--联合dian()方法
+                runCallback3 = e; //将分页条件赋值变量
+            }
+        });
+
+        function dian() {
+            runCallback1.index = 1;
+            runCallback2.index = 2;
+            runCallback3.index = 3;
+
+            hui(runCallback1); //执行此分页的回掉函数（请求后台获取数据的方法）
+            hui(runCallback2); //执行此分页的回掉函数（请求后台获取数据的方法）
+            hui(runCallback3); //执行此分页的回掉函数（请求后台获取数据的方法）
+        }
+    </script>
+</body>
+
+</html>

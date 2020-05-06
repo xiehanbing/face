@@ -5,7 +5,7 @@
     <link href="/wwwroot/lib/jquery-ui-1.12.1/jquery-ui.css" rel="stylesheet" type="text/css" />
     <link href="/wwwroot/project/result/index.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="/wwwroot/lib/honeySwitch/lib/honeySwitch.css">
-
+    <link rel="stylesheet" type="text/css" href="/wwwroot/lib/spage/static/jquery.sPage.css">
 </head>
 
 <body>
@@ -76,6 +76,10 @@
                         </div>
                     </div>
                 </div>
+                <!-- 分页 -->
+                <div class="content-target-data-page-box clearBoth">
+                    <div id="myPage" class="my-page"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -90,6 +94,7 @@
 <script type="text/javascript" src="/wwwroot/lib/axios/my.axios.js" charset="utf8"></script>
 <script type="text/javascript" src="/wwwroot/lib/message/MsgBox.js" charset="utf8"></script>
 <script type="text/javascript" src="/wwwroot/project/result/index.js"></script>
+<script src="/wwwroot/lib/spage/static/jquery.sPage.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         MyResult.init();
@@ -97,6 +102,8 @@
     });
     var MyResult = {
         filterCondition: $('.filter-condition'),
+        page: 1,
+        size: 10,
         init: function () {
             this.renderFilterCondition();
             this.renderImageLevel();
@@ -127,6 +134,7 @@
                 console.log('关闭了');
             });
         },
+        // 获取数据列表
         getTable: function () {
             var that = this;
             $.axios('/wwwroot/data/match.data.json')
@@ -135,8 +143,10 @@
                     var list = data.list;
                     var total = data.total;
                     that.renderTable(list);
+                    that.initPage(total);
                 });
         },
+        // 渲染列表
         renderTable: function (list) {
             var fullHtml = '';
             for (var i = 0; i < list.length; i++) {
@@ -193,6 +203,30 @@
                 fullHtml += html;
             }
             $('.content-target-data-box').html(fullHtml);
+        },
+        // 分页
+        initPage: function (total) {
+            var that = this;
+            $('.content-target-title-total').html(total);
+            $('#myPage').sPage({
+                page: that.page, //当前页码，必填
+                total: total, //数据总条数，必填
+                pageSize: that.size, //每页显示多少条数据，默认10条
+                showTotal: true, //是否显示总条数，默认关闭：false
+                totalTxt: "共{total}条", //数据总条数文字描述，{total}为占位符，默认"共{total}条"
+                noData: false, //没有数据时是否显示分页，默认false不显示，true显示第一页
+                showSkip: true, //是否显示跳页，默认关闭：false
+                showPN: true, //是否显示上下翻页，默认开启：true
+                prevPage: "上一页", //上翻页文字描述，默认“上一页”
+                nextPage: "下一页", //下翻页文字描述，默认“下一页”
+                fastForward: 5, //快进快退页数，默认0表示不开启快进快退
+                backFun: function (page) {
+                    that.page = page;
+                    that.getTable();
+                    //点击分页按钮回调函数，返回当前页码
+                    //$("#pNum").text(page);
+                }
+            });
         }
     };
 </script>

@@ -234,3 +234,8 @@ body {
     font-size: 12px;
     letter-spacing: 1px;
 }
+
+.content-target-data-page-box {
+    text-align: right;
+    color: white;
+}

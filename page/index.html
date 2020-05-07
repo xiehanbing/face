@@ -28,7 +28,7 @@
                         <div>
                             <input type="text" id="cameraSelect" disabled="disabled" class="filter-input"
                                 placeholder="选择摄像机" />
-                            <img class="camera-other-icon" src="/wwwroot/image/camera-other.png" />
+                            <img class="camera-other-icon" src="../wwwroot/image/camera-other.png" />
                         </div>
 
                     </div>
@@ -160,6 +160,7 @@
         cameraList: [],
         captureFile: null,
         cameraData: [],
+        preFix: '../',
         initMyTree: function (data) {
             var that = this;
             var setting = {
@@ -226,7 +227,7 @@
         },
         initCameraTree: function () {
             var that = this;
-            $.axios('/wwwroot/data/camera.data.json')
+            $.axios('../wwwroot/data/camera.data.json')
                 .then(function (response) {
                     var data = response.data.data;
                     that.cameraData = data;
@@ -250,6 +251,29 @@
             this.initCameraSureEvent();
             this.initCameraCancelEvent();
             this.initCameraKeyEvent();
+            this.configRequest();
+        },
+        configRequest: function () {
+            var that = this;
+            var request = window.parent.MyResult.param;
+            that.startDate.val(request.startTime);
+            that.endDate.val(request.endTime);
+
+            that.similarityMin.val(request.minSimilarity);
+            //var maxSim = 100;
+
+            that.gender.val(request.sex);
+            that.gender.selectmenu("refresh"); //刷新
+            that.ageGroup.val(request.ageGroup);
+            that.ageGroup.selectmenu("refresh"); //刷新
+            var glass = '';
+            if (request.withGlass == 'YES') {
+                $('input[name=glass').val('on');
+            } else if (request.withGlass == 'NO') {
+                $('input[name=glass').val('off');
+            }
+            $('input[name=glass').val(glass);
+            that.captureFile = request.facePicBinaryData;
         },
         //绑定icon click 事件
         bindIconClick: function () {

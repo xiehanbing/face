@@ -2,10 +2,11 @@
 <html>
 
 <head>
-    <link href="/wwwroot/lib/jquery-ui-1.12.1/jquery-ui.css" rel="stylesheet" type="text/css" />
-    <link href="/wwwroot/project/result/index.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="/wwwroot/lib/honeySwitch/lib/honeySwitch.css">
-    <link rel="stylesheet" type="text/css" href="/wwwroot/lib/spage/static/jquery.sPage.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link href="../wwwroot/lib/jquery-ui-1.12.1/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <link href="../wwwroot/project/result/index.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="../wwwroot/lib/honeySwitch/lib/honeySwitch.css">
+    <link rel="stylesheet" type="text/css" href="../wwwroot/lib/spage/static/jquery.sPage.css">
 
 </head>
 
@@ -44,7 +45,7 @@
         <div class="content-box clearBoth">
             <div class="content-source-box floatLeft">
                 <div class="content-source-image-box">
-                    <img class="content-source-image" src="/wwwroot/image/demo.png" />
+                    <img class="content-source-image" src="../wwwroot/image/demo.png" />
                 </div>
                 <div class="content-source-image-title">62相机4</div>
             </div>
@@ -91,17 +92,17 @@
 </body>
 
 </html>
-<script src="/wwwroot/lib/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
-<script src="/wwwroot/lib//jquery-ui-1.12.1/jquery-ui.js" type="text/javascript"></script>
-<script src="/wwwroot/lib/honeySwitch/lib/honeySwitch.js" type="text/javascript"></script>
-<script type="text/javascript" src="/wwwroot/lib/axios/polyfill.min.js"></script>
-<script type="text/javascript" src="/wwwroot/lib/axios/axios.min.js"></script>
-<script type="text/javascript" src="/wwwroot/lib/axios/my.axios.js" charset="utf8"></script>
-<script type="text/javascript" src="/wwwroot/lib/message/MsgBox.js" charset="utf8"></script>
-<script type="text/javascript" src="/wwwroot/project/result/index.js"></script>
-<script src="/wwwroot/lib/spage/static/jquery.sPage.min.js"></script>
-<script src="/wwwroot/lib/dialog/jquery.dialog.js" type="text/javascript" charset="utf8"></script>
-<script type="text/javascript" src="/wwwroot/lib/zoom/changeZoom.js"></script>
+<script src="../wwwroot/lib/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
+<script src="../wwwroot/lib//jquery-ui-1.12.1/jquery-ui.js" type="text/javascript"></script>
+<script src="../wwwroot/lib/honeySwitch/lib/honeySwitch.js" type="text/javascript"></script>
+<script type="text/javascript" src="../wwwroot/lib/axios/polyfill.min.js"></script>
+<script type="text/javascript" src="../wwwroot/lib/axios/axios.min.js"></script>
+<script type="text/javascript" src="../wwwroot/lib/axios/my.axios.js" charset="utf8"></script>
+<script type="text/javascript" src="../wwwroot/lib/message/MsgBox.js" charset="utf8"></script>
+<script type="text/javascript" src="../wwwroot/project/result/index.js"></script>
+<script src="../wwwroot/lib/spage/static/jquery.sPage.min.js"></script>
+<script src="../wwwroot/lib/dialog/jquery.dialog.js" type="text/javascript" charset="utf8"></script>
+<script type="text/javascript" src="../wwwroot/lib/zoom/changeZoom.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         MyResult.init();
@@ -125,6 +126,7 @@
             withGlass: ''
         },
         sourceImage: '/wwwroot/image/demo.png',
+        preFix: '../',
         init: function () {
             this.renderFilterCondition();
             this.renderImageLevel();
@@ -141,12 +143,14 @@
                 this.param.cameraIndexCodes = [options.code];
             }
             if (options.facePicUrl != null) {
-                $('.content-source-image').attr('src', options.facePicUrl);
+                $('.content-source-image').attr('src', this.preFix + options.facePicUrl);
                 this.param.facePicUrl = options.facePicUrl;
                 this.sourceImage = options.facePicUrl;
             }
             if (options.facePicBinaryData != null) {
                 this.param.facePicBinaryData = options.facePicBinaryData;
+                $('.content-source-image').attr('src', options.facePicBinaryData);
+                this.sourceImage = options.facePicBinaryData;
             }
             if (options.cameraIndexCodes != null) {
                 this.param.cameraIndexCodes = options.cameraIndexCodes;
@@ -223,7 +227,8 @@
             var that = this;
             this.param.page = this.page;
             this.param.size = this.size;
-            $.axios('/wwwroot/data/match.data.json', this.param, "get")
+            // 默认使用post  $.axios('../wwwroot/data/match.data.json', param, "post")
+            $.axios('../wwwroot/data/match.data.json')
                 .then(function (response) {
                     var data = response.data.data;
                     var list = data.list;
@@ -260,7 +265,7 @@
                 }
                 var time = detail.time;
                 var name = detail.name;
-                var url = detail.url;
+                var url = this.preFix + detail.url;
                 var id = detail.id;
 
                 var html = '  <div class="content-target-data-item-box floatLeft" camera-page="' + this.page +
@@ -330,7 +335,7 @@
                 var page = $(this).attr('camera-page');
                 var index = $(this).attr('camera-index');
                 //that.renderDetail(cameraId);
-                showDialog('detail.html?id=' + cameraId + "&source=" + that.sourceImage + "&page=" +
+                showDialog('detail.html?id=' + cameraId + "&page=" +
                     page + "&index=" + index, '详情', 659,
                     616);
             });

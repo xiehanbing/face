@@ -6,14 +6,14 @@
     <!-- <title>jQuery swiper横向时间轴滑块</title> -->
 
     <!--swiper框架样式-->
-    <link rel="stylesheet" type="text/css" href="/wwwroot/lib/timer/statics/css/swiper-3.4.2.min.css" />
+    <link rel="stylesheet" type="text/css" href="../wwwroot/lib/timer/statics/css/swiper-3.4.2.min.css" />
 
     <!--主要样式-->
-    <link rel="stylesheet" type="text/css" href="/wwwroot/lib/timer/statics/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../wwwroot/lib/timer/statics/css/style.css" />
 
     <!--插件-->
-    <script src="/wwwroot/lib/timer/statics/js/jquery.min.js"></script>
-    <script src="/wwwroot/lib/timer/statics/js/swiper-3.4.2.jquery.min.js" type="text/javascript" charset="utf-8">
+    <script src="../wwwroot/lib/timer/statics/js/jquery.min.js"></script>
+    <script src="../wwwroot/lib/timer/statics/js/swiper-3.4.2.jquery.min.js" type="text/javascript" charset="utf-8">
     </script>
 </head>
 
@@ -30,9 +30,9 @@
             <div class="swiper-button-next swiper-button-disabled"></div>
         </div>
     </div>
-    <script type="text/javascript" src="/wwwroot/lib/axios/polyfill.min.js"></script>
-    <script type="text/javascript" src="/wwwroot/lib/axios/axios.min.js"></script>
-    <script type="text/javascript" src="/wwwroot/lib/axios/my.axios.js" charset="utf8"></script>
+    <script type="text/javascript" src="../wwwroot/lib/axios/polyfill.min.js"></script>
+    <script type="text/javascript" src="../wwwroot/lib/axios/axios.min.js"></script>
+    <script type="text/javascript" src="../wwwroot/lib/axios/my.axios.js" charset="utf8"></script>
     <!---调用方法-->
     <script type="text/javascript">
         $(function () {
@@ -49,7 +49,8 @@
             },
             renderTime: function () {
                 var param = window.parent.MyResult.param;
-                $.axios('/wwwroot/data/match.data.json', param, "get")
+                // 默认使用post  $.axios('../wwwroot/data/match.data.json', param, "post")
+                $.axios('../wwwroot/data/match.data.json')
                     .then(function (response) {
                         var data = response.data.data;
                         var list = data.list;

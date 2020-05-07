@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link href="../wwwroot/lib/jquery-ui-1.12.1/jquery-ui.css" rel="stylesheet" type="text/css" />
     <link href="../wwwroot/project/detail/index.css" rel="stylesheet" type="text/css" />
 </head>
@@ -71,9 +72,11 @@
         page: 1,
         index: 0,
         size: 10,
+        preFix: '../',
         init: function () {
             this.id = this.getQueryString('id');
-            this.source = this.getQueryString('source');
+            this.source = window.parent.MyResult.sourceImage;
+            // this.getQueryString('source');
 
             this.page = parseInt(this.getQueryString('page'));
             this.index = parseInt(this.getQueryString('index'));
@@ -86,7 +89,9 @@
         //以图搜图
         renderDetail: function (id) {
             var that = this;
-            $.axios('/wwwroot/data/match.data.json')
+            var param = window.parent.MyResult.param;
+            // 默认使用post  $.axios('../wwwroot/data/match.data.json', param, "post")
+            $.axios('../wwwroot/data/match.data.json')
                 .then(function (response) {
                     var data = response.data.data;
                     var list = data.list;
@@ -118,9 +123,12 @@
             this.item = detail;
             var time = detail.time;
             var name = detail.name;
-            var url = detail.url;
+            var url = this.preFix + detail.url;
             var id = detail.id;
-            $('.source').attr('src', this.source);
+            if (this.source.indexOf('data') == 0) {
+                $('.source').attr('src', this.source);
+            } else
+                $('.source').attr('src', this.preFix + this.source);
             $('.target').attr('src', url);
             $('.large').html(matchFirst);
             $('.small').html('.' + matchSecond);
@@ -170,7 +178,8 @@
                 param.page = param.page + 1;
                 isNewPage = true;
             }
-            $.axios('/wwwroot/data/match.data.json', param, "get")
+            // 默认使用post  $.axios('../wwwroot/data/match.data.json', param, "post")
+            $.axios('../wwwroot/data/match.data.json')
                 .then(function (response) {
                     var data = response.data.data;
                     var list = data.list;
@@ -215,7 +224,8 @@
                 param.page = param.page - 1;
                 isNewPage = true;
             }
-            $.axios('/wwwroot/data/match.data.json', param, "get")
+            // 默认使用post  $.axios('../wwwroot/data/match.data.json', param, "post")
+            $.axios('../wwwroot/data/match.data.json')
                 .then(function (response) {
                     var data = response.data.data;
                     var list = data.list;

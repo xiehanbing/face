@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <!-- <title>jQuery swiper横向时间轴滑块</title> -->
+
+    <!--swiper框架样式-->
+    <link rel="stylesheet" type="text/css" href="/wwwroot/lib/timer/statics/css/swiper-3.4.2.min.css" />
+
+    <!--主要样式-->
+    <link rel="stylesheet" type="text/css" href="/wwwroot/lib/timer/statics/css/style.css" />
+
+    <!--插件-->
+    <script src="/wwwroot/lib/timer/statics/js/jquery.min.js"></script>
+    <script src="/wwwroot/lib/timer/statics/js/swiper-3.4.2.jquery.min.js" type="text/javascript" charset="utf-8">
+    </script>
+</head>
+
+<body>
+    <div class="product-section product-features">
+        <div class="product-title">轨迹回溯</div>
+        <div class="product-wrapper">
+            <div class="product-body swiper-container">
+                <ul class="features-slide swiper-wrapper">
+
+                </ul>
+            </div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next swiper-button-disabled"></div>
+        </div>
+    </div>
+    <script type="text/javascript" src="/wwwroot/lib/axios/polyfill.min.js"></script>
+    <script type="text/javascript" src="/wwwroot/lib/axios/axios.min.js"></script>
+    <script type="text/javascript" src="/wwwroot/lib/axios/my.axios.js" charset="utf8"></script>
+    <!---调用方法-->
+    <script type="text/javascript">
+        $(function () {
+            MyTime.init();
+
+
+        })
+
+        var MyTime = {
+            id: '',
+            init: function () {
+                this.id = this.getQueryString('id');
+                this.renderTime();
+            },
+            renderTime: function () {
+                var param = window.parent.MyResult.param;
+                $.axios('/wwwroot/data/match.data.json', param, "get")
+                    .then(function (response) {
+                        var data = response.data.data;
+                        var list = data.list;
+                        if (list.length > 0) {
+                            var html = '';
+                            for (var index = 0; index < list.length; index++) {
+                                var item = list[index];
+                                html += '<li class="features-item swiper-slide">' +
+                                    ' <h3>' + item.time + '</h3>' +
+                                    ' <i></i> <a class="features-info">' +
+                                    ' <p class="features-info-i"></p>' +
+                                    ' <p class="features-info-s">' + "<p>" + item.area + "</p><p>" + item
+                                    .name + '</p> </p>' +
+                                    ' </a></li>';
+
+                            }
+                            $('.features-slide').html(html);
+                            var mySwiper = new Swiper(".swiper-container", {
+                                slidesPerView: 4, //默认是显示4个
+                                initialSlide: 999, //默认从第几个显示，999是为了让右边没有
+                                spaceBetween: 0, //间距
+                                speed: 1000, //速度
+                                prevButton: ".swiper-button-prev", //左右按钮
+                                nextButton: ".swiper-button-next"
+                            });
+                        }
+                    });
+
+            },
+            //获取参数
+            getQueryString(name) {
+                var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+                var r = window.location.search.substr(1).match(reg);
+                if (r != null) {
+                    return unescape(r[2]);
+                }
+                return null;
+            },
+        };
+    </script>
+</body>
+
+</html>

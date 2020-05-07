@@ -83,7 +83,11 @@ body {
     /* text-align: center; */
 }
 
-.ztree {}
+.ztree {
+    border: solid 1px #32b2ec;
+    width: 320px;
+    height: 407px;
+}
 
 .camera-other-icon {
     background-image: url(../../image/camera-other.png);
@@ -224,3 +228,51 @@ body {
     overflow: visible;
     border: solid 1px #30b8ff;
 } */
+
+.floatLeft {
+    float: left;
+}
+
+.camera-tree-title {
+    width: 51px;
+    font-size: 14px;
+    line-height: 36px;
+    letter-spacing: 1px;
+}
+
+.camera-tree-box {
+    clear: both;
+    height: 427px;
+}
+
+#camera-filter {
+    width: 320px;
+}
+
+.camera-filter-box {
+    margin: 20px 0;
+}
+
+.camera-key-box {
+    height: 30px;
+}
+
+.camera-btn-box {
+    margin-top: 30px;
+    height: 34px;
+}
+
+.camera-btn {
+    width: 120px;
+    height: 34px;
+    background-color: #15aaff;
+    border-radius: 6px;
+    text-align: center;
+    line-height: 34px;
+    margin: 0 30px;
+    cursor: pointer;
+}
+
+.camera-sure {
+    margin-left: 70px;
+}

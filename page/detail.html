@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="../wwwroot/lib/jquery-ui-1.12.1/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <link href="../wwwroot/project/detail/index.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div class="container" id="container">
+        <div class="content-box">
+            <div class="content-match-box">
+                <div class="content-match-image-box">
+                    <div class="source-image floatLeft">
+                        <img class="content-target-data-item-image source" src="" />
+                    </div>
+                    <div class="camera-match-box-container floatLeft">
+                        <div class="camera-match-box">
+                            <span class="camera-match-title large">98</span>
+                            <span class="camera-match-title small">.65</span>
+                        </div>
+                    </div>
+                    <div class="target-image floatLeft">
+                        <img class="content-target-data-item-image  target" src="" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-detail">
+                <div class="camera-time-box">
+                    <span class="camera-title camera-time-title">抓拍时间:</span>
+                    <span class="camera-time-data">2020-04-20 11:48:02</span>
+                </div>
+                <div class="camera-box">
+                    <span class="camera-title">摄像机:</span>
+                    <span class="camera-data">62相机4</span>
+                </div>
+
+                <!-- <div class="low-warning-box">
+                    <span>*低质量图片,不显示属性</span>
+                </div> -->
+            </div>
+
+            <div class="content-btn-box">
+                <div class="tool-btn export-btn floatLeft">导出</div>
+                <div class="tool-btn search-btn floatLeft">以图搜图</div>
+
+                <div class="page-btn pre-btn floatLeft">上一个</div>
+                <div class="page-btn next-btn floatLeft">下一个</div>
+            </div>
+        </div>
+</body>
+
+</html>
+<script src="../wwwroot/lib/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
+<script src="../wwwroot/lib//jquery-ui-1.12.1/jquery-ui.js" type="text/javascript"></script>
+<script type="text/javascript" src="../wwwroot/lib/axios/polyfill.min.js"></script>
+<script type="text/javascript" src="../wwwroot/lib/axios/axios.min.js"></script>
+<script type="text/javascript" src="../wwwroot/lib/axios/my.axios.js" charset="utf8"></script>
+<script type="text/javascript" src="../wwwroot/lib/message/MsgBox.js" charset="utf8"></script>
+<script type="text/javascript" src="../wwwroot/project/detail/index.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        MyDetail.init();
+    });
+    var MyDetail = {
+        id: '',
+        source: '',
+        item: {},
+        page: 1,
+        index: 0,
+        size: 10,
+        init: function () {
+            this.id = this.getQueryString('id');
+            this.source = this.getQueryString('source');
+
+            this.page = parseInt(this.getQueryString('page'));
+            this.index = parseInt(this.getQueryString('index'));
+
+            this.renderDetail(this.id);
+            this.initSearchEvent();
+            this.initPreEvent();
+            this.initNextEvent();
+        },
+        //以图搜图
+        renderDetail: function (id) {
+            var that = this;
+            $.axios('/wwwroot/data/match.data.json')
+                .then(function (response) {
+                    var data = response.data.data;
+                    var list = data.list;
+                    for (var index = 0; index < list.length; index++) {
+                        var item = list[index];
+                        if (item.id == id) {
+                            that.initDetailLayout(item);
+                            break;
+                        }
+                    }
+                });
+        },
+        //渲染详情布局
+        initDetailLayout: function (detail) {
+            var matchResult = detail.similarity;
+            var matchFirst, matchSecond;
+            if (matchResult == null) {
+                matchFirst = "00";
+                matchSecond = "00"
+            } else {
+                var matchArray = (matchResult + '').split('.');
+                matchFirst = matchArray[0];
+                if (matchArray.length > 1) {
+                    matchSecond = matchArray[1];
+                } else {
+                    matchSecond = "00";
+                }
+            }
+            this.item = detail;
+            var time = detail.time;
+            var name = detail.name;
+            var url = detail.url;
+            var id = detail.id;
+            $('.source').attr('src', this.source);
+            $('.target').attr('src', url);
+            $('.large').html(matchFirst);
+            $('.small').html('.' + matchSecond);
+            $('.camera-time-data').html(time);
+            $('.camera-data').html(name);
+        },
+        //获取参数
+        getQueryString(name) {
+            var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) {
+                return unescape(r[2]);
+            }
+            return null;
+        },
+        initSearchEvent: function () {
+            var that = this;
+            $('.search-btn').click(function () {
+                window.parent.closeDialog();
+                window.parent.MyResult.configRequest({
+                    facePicUrl: that.item.url,
+                    name: that.item.name,
+                    code: that.item.code
+                });
+
+            });
+        },
+        initPreEvent: function () {
+            var that = this;
+            $('.pre-btn').click(function () {
+                that.getPreTable();
+            });
+        },
+        initNextEvent: function () {
+            var that = this;
+            $('.next-btn').click(function () {
+                that.getNextTable();
+            });
+        },
+        getNextTable: function () {
+            var that = this;
+            var param = window.parent.MyResult.param;
+            param.page = this.page;
+            param.size = this.size;
+            var isNewPage = false;
+            if (this.index + 1 >= this.size) {
+                param.page = param.page + 1;
+                isNewPage = true;
+            }
+            $.axios('/wwwroot/data/match.data.json', param, "get")
+                .then(function (response) {
+                    var data = response.data.data;
+                    var list = data.list;
+                    var item = {};
+                    var currentIndex = 0;
+                    if (list.length > 0) {
+                        if (isNewPage) {
+                            item = list[0];
+                            currentIndex = 0;
+                        } else {
+                            for (var index = 0; index < list.length; index++) {
+                                var ele = list[index];
+                                if (ele.id == that.id) {
+                                    item = list[index + 1];
+                                    currentIndex = index + 1;
+                                    break;
+                                }
+                            }
+                        }
+                        that.page = param.page;
+                        that.index = currentIndex;
+                    }
+                    //不为空 且有属性
+                    if (item != null && item.hasOwnProperty('id')) {
+                        that.initDetailLayout(item);
+                        that.id = item.id;
+                    }
+
+                });
+        },
+        getPreTable: function () {
+            var that = this;
+            var param = window.parent.MyResult.param;
+            param.page = this.page;
+            param.size = this.size;
+            var isNewPage = false;
+            //第一页 且 是第一个 直接返回
+            if (this.page == 1 && this.index == 0) {
+                return;
+            }
+            if (this.index - 1 < 0) {
+                param.page = param.page - 1;
+                isNewPage = true;
+            }
+            $.axios('/wwwroot/data/match.data.json', param, "get")
+                .then(function (response) {
+                    var data = response.data.data;
+                    var list = data.list;
+                    var item = {};
+                    var currentIndex = 0;
+                    if (list.length > 0) {
+                        if (isNewPage) {
+                            item = list[list.length - 1];
+                            currentIndex = list.length - 1;
+                        } else {
+                            for (var index = 0; index < list.length; index++) {
+                                var ele = list[index];
+                                if (ele.id == that.id) {
+                                    item = list[index - 1];
+                                    currentIndex = index - 1;
+                                    break;
+                                }
+                            }
+                        }
+                        that.page = param.page;
+                        that.index = currentIndex;
+                    }
+                    //不为空 且有属性
+                    if (item != null && item.hasOwnProperty('id')) {
+                        that.initDetailLayout(item);
+                        that.id = item.id;
+                    }
+
+                });
+
+        }
+    };
+</script>

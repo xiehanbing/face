@@ -2,13 +2,13 @@
 <html>
 
 <head>
-    <link href="/wwwroot/lib/jquery-ui-1.12.1/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <link href="../wwwroot/lib/jquery-ui-1.12.1/jquery-ui.css" rel="stylesheet" type="text/css" />
     <!-- <link href="/wwwroot/lib/checkbox/css/googleapis.css" rel="stylesheet" type="text/css" /> -->
     <!-- <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&subset=latin,latin-ext' rel='stylesheet'> -->
     <!-- <link href="/wwwroot/lib/checkbox/css/demo.css?v=0.7.1" rel="stylesheet"> -->
     <!-- <link href="/wwwroot/lib/checkbox/skins/all.css?v=0.7.1" rel="stylesheet"> -->
-    <link rel="stylesheet" type="text/css" href="/wwwroot/lib/tree/zTree_v3/css/zTreeStyle/zTreeStyle.css" />
-    <link href="/wwwroot/project/index/index.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../wwwroot/lib/tree/zTree_v3/css/zTreeStyle/zTreeStyle.css" />
+    <link href="../wwwroot/project/index/index.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
@@ -54,8 +54,8 @@
                     <div class="filter-list-item-box">
                         <select class="filter-select" id="filter-gender" name="filter-gender">
                             <option value="">全部</option>
-                            <option value="1">男</option>
-                            <option value="2">女</option>
+                            <option value="male">男</option>
+                            <option value="female">女</option>
                         </select>
                     </div>
                 </div>
@@ -91,7 +91,21 @@
                 </div>
             </div>
             <div id="camera-tree" class="camera-tree noShow">
-                <ul id="ztree" class="ztree"></ul>
+                <div class="camera-key-box camera-filter-box">
+                    <div class="camera-tree-title floatLeft">关键字:</div>
+
+                    <div class="floatLeft"> <input type="text" id="camera-filter" class="filter-input"></div>
+                </div>
+                <div class="camera-tree-box camera-filter-box">
+                    <div class="camera-tree-title floatLeft">筛选:</div>
+                    <div class="floatLeft">
+                        <ul id="ztree" class="ztree"></ul>
+                    </div>
+                </div>
+                <div class="camera-btn-box">
+                    <div class="camera-btn camera-sure floatLeft">确定</div>
+                    <div class="camera-btn camera-cancel floatLeft">取消</div>
+                </div>
             </div>
         </div>
         <div class="filter-btn-box">
@@ -103,17 +117,18 @@
 </body>
 
 </html>
-<script src="/wwwroot/lib/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
-<script src="/wwwroot/lib//jquery-ui-1.12.1/jquery-ui.js" type="text/javascript"></script>
-<script src="/wwwroot/lib/checkbox/js/jquery.icheck.min.js?v=0.7.1"></script>
-<script type="text/javascript" src="/wwwroot/lib/tree/zTree_v3/js/jquery.ztree.all.js"></script>
-<script type="text/javascript" src="/wwwroot/lib/axios/polyfill.min.js"></script>
-<script type="text/javascript" src="/wwwroot/lib/axios/axios.min.js"></script>
-<script type="text/javascript" src="/wwwroot/lib/axios/my.axios.js" charset="utf8"></script>
-<script type="text/javascript" src="/wwwroot/lib/message/MsgBox.js" charset="utf8"></script>
-<script type="text/javascript" src="/wwwroot/lib/jquery-ui-1.12.1/jquery-ui-timepicker-addon.js"></script>
-<script type="text/javascript" src="/wwwroot/lib/jquery-ui-1.12.1/timepicker-zh-CN.js"></script>
-<script src="/wwwroot/project/index/index.js" type="text/javascript"></script>
+<script src="../wwwroot/lib/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
+<script src="../wwwroot/lib//jquery-ui-1.12.1/jquery-ui.js" type="text/javascript"></script>
+<script src="../wwwroot/lib/checkbox/js/jquery.icheck.min.js?v=0.7.1"></script>
+<script type="text/javascript" src="../wwwroot/lib/tree/zTree_v3/js/jquery.ztree.all.js"></script>
+<script type="text/javascript" src="../wwwroot/lib/axios/polyfill.min.js"></script>
+<script type="text/javascript" src="../wwwroot/lib/axios/axios.min.js"></script>
+<script type="text/javascript" src="../wwwroot/lib/axios/my.axios.js" charset="utf8"></script>
+<script type="text/javascript" src="../wwwroot/lib/message/MsgBox.js" charset="utf8"></script>
+<script type="text/javascript" src="../wwwroot/lib/jquery-ui-1.12.1/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript" src="../wwwroot/lib/jquery-ui-1.12.1/timepicker-zh-CN.js"></script>
+<script src="../wwwroot/project/index/index.js" type="text/javascript"></script>
+<!-- <script src="/wwwroot/lib/dialog/jquery.dialog.js" type="text/javascript" charset="utf8"></script> -->
 <script type="text/javascript">
     $(document).ready(function () {
         $('.demo-list input').iCheck({
@@ -144,6 +159,7 @@
         },
         cameraList: [],
         captureFile: null,
+        cameraData: [],
         initMyTree: function (data) {
             var that = this;
             var setting = {
@@ -180,9 +196,6 @@
                     }
                 },
                 callback: {
-                    // onDblClick: function (event, treeId, treeNode) {
-
-                    // },
                     onClick: function (event, treeId, treeNode) {
                         console.log(treeNode);
                     },
@@ -195,14 +208,16 @@
                         var result = nodes.filter(function (item) {
                             return item.camera != null;
                         });
+                        var cameraString = '';
                         that.cameraList = result.map(function (item) {
+                            cameraString += item.name + ';';
                             return {
                                 name: item.name,
                                 code: item.code,
                                 id: item.id
                             };
                         });
-                        //console.log(that.cameraList);
+                        $('#cameraSelect').val(cameraString);
                     }
                 }
             };
@@ -214,6 +229,7 @@
             $.axios('/wwwroot/data/camera.data.json')
                 .then(function (response) {
                     var data = response.data.data;
+                    that.cameraData = data;
                     $.fn.zTree.init(that.myTree, that.ztreeSetting, data);
                     var treeObj = $.fn.zTree.getZTreeObj('ztree');
                     treeObj.expandAll(true);
@@ -230,6 +246,10 @@
             this.renderFileUpload();
             this.renderAgeGroup();
             this.renderGlass();
+            this.filterBtnEvent();
+            this.initCameraSureEvent();
+            this.initCameraCancelEvent();
+            this.initCameraKeyEvent();
         },
         //绑定icon click 事件
         bindIconClick: function () {
@@ -237,8 +257,10 @@
                 var hasClass = $('.camera-tree').hasClass('noShow');
                 if (!hasClass) {
                     $('.camera-tree').addClass('noShow');
+
                 } else {
-                    $('.camera-tree').removeClass('noShow');
+                    showDialog('', '摄像机列表', 500, 667);
+
                 }
             });
         },
@@ -335,6 +357,117 @@
             // $("#glass").checkboxradio();
             // $("#glass-2").checkboxradio();
             $('input[name=glass').checkboxradio();
+        },
+        filterBtnEvent: function () {
+            var that = this;
+            $('.filter-btn').click(function () {
+                var startTime = that.startDate.val();
+                var endTime = that.endDate.val();
+
+                var minSim = that.similarityMin.val();
+                var maxSim = 100;
+
+                var sex = that.gender.val();
+                var age = that.ageGroup.val();
+
+                var glass = $('input[name=glass').val();
+                if (glass == 'on') {
+                    glass = 'YES';
+                }
+                if (glass == 'off') {
+                    glass = 'NO';
+                }
+
+                window.parent.MyResult.configRequest({
+                    facePicBinaryData: that.captureFile,
+                    cameraIndexCodes: that.cameraList.map(function (item) {
+                        return item.code;
+                    }),
+                    startTime: startTime,
+                    endTime: endTime,
+                    minSimilarity: minSim,
+                    maxSimilarity: maxSim,
+                    //age: age,
+                    ageGroup: age,
+                    sex: sex,
+                    withGlass: glass
+                });
+                window.parent.closeDialog();
+            });
+        },
+        initCameraSureEvent: function () {
+            $('.camera-sure').click(function (e) {
+                closeDialog();
+            });
+
+        },
+        initCameraCancelEvent: function () {
+            $('.camera-cancel').click(function (e) {
+                closeDialog();
+            });
+        },
+        initCameraKeyEvent: function () {
+            var that = this;
+            $('#camera-filter').on('input', function () {
+                var key = $('#camera-filter').val();
+                if (key != null && key != '') {
+                    var zTree = $.fn.zTree.getZTreeObj('ztree');
+                    var nodeList = zTree.getNodesByParamFuzzy('name', key);
+                    $.fn.zTree.init(that.myTree, that.ztreeSetting, nodeList);
+                } else {
+                    $.fn.zTree.init(that.myTree, that.ztreeSetting, that.cameraData);
+                    var treeObj = $.fn.zTree.getZTreeObj('ztree');
+                    treeObj.expandAll(true);
+                }
+            });
+
         }
     };
+    // 弹框
+    var titleWidth = 280;
+
+    function showDialog(url, title, width, height) {
+        if (
+            width != null &&
+            width != undefined &&
+            typeof width == "string" &&
+            width.constructor == String &&
+            width.indexOf("px") >= 0
+        ) {
+            width = parseFloat(width.replace(/px/g, ""));
+        }
+
+        if (
+            height != null &&
+            height != undefined &&
+            typeof height == "string" &&
+            height.constructor == String &&
+            height.indexOf("px") >= 0
+        ) {
+            height = parseFloat(height.replace(/px/g, ""));
+        }
+
+        if (!width || width > $(window).width() - 60) width = $(window).width() - 60;
+        if (!height || height > $(window).height() - 60)
+            height = $(window).height() - 60;
+        var marginLeft = 0;
+        if (width > titleWidth) {
+            //titleWidth = 280;
+            marginLeft = width / 2 - titleWidth / 2;
+        } else {
+            titleWidth = width;
+        }
+        $(".ui-dialog-title")
+            .css("margin-left", marginLeft + "px")
+            .css("width", titleWidth + "px");
+        $("#camera-tree").dialog({
+            title: title,
+            width: width,
+            height: height
+        });
+    }
+
+    function closeDialog() {
+        $("#camera-tree").dialog("close");
+    }
 </script>

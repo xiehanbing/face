@@ -19,7 +19,7 @@
 
 <body>
     <div class="product-section product-features">
-        <div class="product-title">轨迹回溯</div>
+        <div class="product-title"></div>
         <div class="product-wrapper">
             <div class="product-body swiper-container">
                 <ul class="features-slide swiper-wrapper">
@@ -33,6 +33,7 @@
     <script type="text/javascript" src="../wwwroot/lib/axios/polyfill.min.js"></script>
     <script type="text/javascript" src="../wwwroot/lib/axios/axios.min.js"></script>
     <script type="text/javascript" src="../wwwroot/lib/axios/my.axios.js" charset="utf8"></script>
+    <script type="text/javascript" src="../wwwroot/project/config.js"></script>
     <!---调用方法-->
     <script type="text/javascript">
         $(function () {
@@ -47,13 +48,15 @@
                 this.id = this.getQueryString('id');
                 this.renderTime();
             },
+            jsonUrl: '../wwwroot/data/match.data.json',
             renderTime: function () {
                 var param = window.parent.MyResult.param;
                 // 默认使用post  $.axios('../wwwroot/data/match.data.json', param, "post")
-                $.axios('../wwwroot/data/match.data.json')
+                $.axios(MyConfig.getMatchAllUrl(), param, "post")
                     .then(function (response) {
-                        var data = response.data.data;
+                        var data = response.data.result;
                         var list = data.list;
+                        list = MyConfig.mapToMatch(list);
                         if (list.length > 0) {
                             var html = '';
                             for (var index = 0; index < list.length; index++) {

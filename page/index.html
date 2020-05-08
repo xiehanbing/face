@@ -82,10 +82,10 @@
                     <div class="filter-list-item-title">是否戴眼镜:</div>
                     <div class="filter-list-item-box glass-box">
 
-                        <input type="radio" name="glass" class="glass" id="glass-1">
+                        <input type="radio" name="glass" class="glass" value="on" id="glass-1">
                         <label for="glass-1" class="glass">是</label>
 
-                        <input type="radio" name="glass" class="glass" id="glass-2">
+                        <input type="radio" name="glass" class="glass" value="off" id="glass-2">
                         <label for="glass-2" class="glass">否</label>
                     </div>
                 </div>
@@ -109,8 +109,8 @@
             </div>
         </div>
         <div class="filter-btn-box">
-            <div class="filter-btn">检索</div>
-            <div class="filter-btn">重置</div>
+            <div class="filter-btn filter-btn-search">检索</div>
+            <div class="filter-btn filter-btn-reset">重置</div>
         </div>
 
     </div>
@@ -128,6 +128,7 @@
 <script type="text/javascript" src="../wwwroot/lib/jquery-ui-1.12.1/jquery-ui-timepicker-addon.js"></script>
 <script type="text/javascript" src="../wwwroot/lib/jquery-ui-1.12.1/timepicker-zh-CN.js"></script>
 <script src="../wwwroot/project/index/index.js" type="text/javascript"></script>
+<script type="text/javascript" src="../wwwroot/project/config.js"></script>
 <!-- <script src="/wwwroot/lib/dialog/jquery.dialog.js" type="text/javascript" charset="utf8"></script> -->
 <script type="text/javascript">
     $(document).ready(function () {
@@ -160,7 +161,9 @@
         cameraList: [],
         captureFile: null,
         cameraData: [],
+        checkNodeList: [],
         preFix: '../',
+        jsonUrl: '../wwwroot/data/camera.data.json',
         initMyTree: function (data) {
             var that = this;
             var setting = {
@@ -209,16 +212,7 @@
                         var result = nodes.filter(function (item) {
                             return item.camera != null;
                         });
-                        var cameraString = '';
-                        that.cameraList = result.map(function (item) {
-                            cameraString += item.name + ';';
-                            return {
-                                name: item.name,
-                                code: item.code,
-                                id: item.id
-                            };
-                        });
-                        $('#cameraSelect').val(cameraString);
+                        that.checkNodeList = result;
                     }
                 }
             };
@@ -227,13 +221,45 @@
         },
         initCameraTree: function () {
             var that = this;
-            $.axios('../wwwroot/data/camera.data.json')
+            $.axios(MyConfig.getAllCameraUrl())
                 .then(function (response) {
-                    var data = response.data.data;
+                    var data = response.data.result.list;
+                    data = data.map(function (item) {
+                        return {
+                            id: item.cameraIndexCode,
+                            code: item.cameraIndexCode,
+                            name: item.cameraName,
+                            camera: 1
+                        }
+                    });
                     that.cameraData = data;
                     $.fn.zTree.init(that.myTree, that.ztreeSetting, data);
                     var treeObj = $.fn.zTree.getZTreeObj('ztree');
                     treeObj.expandAll(true);
+
+                    //设置选中
+                    var selectTree = window.parent.MyResult.param.cameraIndexCodes;
+                    if (selectTree != null && selectTree.length > 0) {
+                        var nodeList = [];
+                        var cameraString = '';
+                        for (var i = 0; i < selectTree.length; i++) {
+                            var node = treeObj.getNodeByParam('id', selectTree[i]);
+                            if (node != null) {
+                                nodeList.push(node);
+                                treeObj.checkNode(node, true);
+                            }
+                        }
+                        that.cameraList = nodeList.map(function (item) {
+                            cameraString += item.name + ';';
+                            return {
+                                name: item.name,
+                                code: item.code,
+                                id: item.id
+                            };
+                        });
+                        $('#cameraSelect').val(cameraString);
+                        that.checkNodeList = nodeList;
+                    }
                 });
             return this;
         },
@@ -268,12 +294,21 @@
             that.ageGroup.selectmenu("refresh"); //刷新
             var glass = '';
             if (request.withGlass == 'YES') {
-                $('input[name=glass').val('on');
+                //$('input[name=glass').val('on');
+                glass = 'on';
             } else if (request.withGlass == 'NO') {
-                $('input[name=glass').val('off');
+                //$('input[name=glass').val('off');
+                glass = 'off';
             }
-            $('input[name=glass').val(glass);
+            // $('input[name=glass]').val(glass);
+            //$('input[name=glass]').checkboxradio("refresh"); //刷新
+            $(":radio[name='glass'][value='" + glass + "']").prop("checked", "checked");
+            $('input[name=glass]').checkboxradio("refresh"); //刷新
             that.captureFile = request.facePicBinaryData;
+            if (that.captureFile != null && that.captureFile != '')
+                $('.filter-capture-file-upload input').parent().css({
+                    'background': 'url(' + that.captureFile + ') no-repeat 0% 0%/cover'
+                });
         },
         //绑定icon click 事件
         bindIconClick: function () {
@@ -380,11 +415,17 @@
             // $('.glass').checkboxradio();
             // $("#glass").checkboxradio();
             // $("#glass-2").checkboxradio();
-            $('input[name=glass').checkboxradio();
+            $('input[name=glass]').checkboxradio();
+            // $('.glass').on('change', function (event) {
+            //     console.log($(event.target).val());
+            //     var select = $('input[name="glass"]:checked').val();
+            //     console.log(select);
+            // });
         },
         filterBtnEvent: function () {
             var that = this;
-            $('.filter-btn').click(function () {
+            //检索
+            $('.filter-btn-search').click(function () {
                 var startTime = that.startDate.val();
                 var endTime = that.endDate.val();
 
@@ -394,7 +435,8 @@
                 var sex = that.gender.val();
                 var age = that.ageGroup.val();
 
-                var glass = $('input[name=glass').val();
+                // var glass = $('input[name=glass]:checked').val();
+                var glass = $("input[name='glass']:checked").val();
                 if (glass == 'on') {
                     glass = 'YES';
                 }
@@ -418,10 +460,61 @@
                 });
                 window.parent.closeDialog();
             });
+            //重置
+            $('.filter-btn-reset').click(function () {
+                that.resetFilterEvent();
+            });
+
+        },
+        resetFilterEvent: function () {
+            var that = this;
+            //开始时间
+            that.startDate.val('');
+            //结束时间
+            that.endDate.val('');
+
+            //最小相似度
+            that.similarityMin.val('');
+            //var maxSim = 100;
+            //性别
+            that.gender.val('');
+            that.gender.selectmenu("refresh"); //刷新
+            //年龄
+            that.ageGroup.val('');
+            that.ageGroup.selectmenu("refresh"); //刷新
+            //是否带眼镜
+            // $(":radio[name='glass'][value='" + '' + "']").prop("checked", "checked");
+            $("input:radio[name='glass']").attr("checked", false);
+            $('input[name=glass]').checkboxradio("refresh"); //刷新
+            //选择的文件
+            that.captureFile = "";
+
+            $('.filter-capture-file-upload input').parent().css({
+                'background': 'rgba(48, 184, 255, 0.4)'
+            });
+            //摄像机列表反选
+            var treeObj = $.fn.zTree.getZTreeObj("ztree");
+            treeObj.cancelSelectedNode();
+            $('#cameraSelect').val('');
+            //清空列表
+            that.cameraList = [];
         },
         initCameraSureEvent: function () {
+            var that = this;
             $('.camera-sure').click(function (e) {
                 closeDialog();
+                //筛选是摄像机的节点
+                var result = that.checkNodeList;
+                var cameraString = '';
+                that.cameraList = result.map(function (item) {
+                    cameraString += item.name + ';';
+                    return {
+                        name: item.name,
+                        code: item.code,
+                        id: item.id
+                    };
+                });
+                $('#cameraSelect').val(cameraString);
             });
 
         },

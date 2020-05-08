@@ -17,8 +17,8 @@
                     </div>
                     <div class="camera-match-box-container floatLeft">
                         <div class="camera-match-box">
-                            <span class="camera-match-title large">98</span>
-                            <span class="camera-match-title small">.65</span>
+                            <span class="camera-match-title large"></span>
+                            <span class="camera-match-title small"></span>
                         </div>
                     </div>
                     <div class="target-image floatLeft">
@@ -30,11 +30,11 @@
             <div class="content-detail">
                 <div class="camera-time-box">
                     <span class="camera-title camera-time-title">抓拍时间:</span>
-                    <span class="camera-time-data">2020-04-20 11:48:02</span>
+                    <span class="camera-time-data"></span>
                 </div>
                 <div class="camera-box">
                     <span class="camera-title">摄像机:</span>
-                    <span class="camera-data">62相机4</span>
+                    <span class="camera-data"></span>
                 </div>
 
                 <!-- <div class="low-warning-box">
@@ -60,7 +60,8 @@
 <script type="text/javascript" src="../wwwroot/lib/axios/my.axios.js" charset="utf8"></script>
 <script type="text/javascript" src="../wwwroot/lib/message/MsgBox.js" charset="utf8"></script>
 <script type="text/javascript" src="../wwwroot/project/detail/index.js"></script>
-
+<script type="text/javascript" src="../wwwroot/project/config.js"></script>
+<script type="text/javascript" src="../wwwroot/lib/image.download.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         MyDetail.init();
@@ -73,6 +74,7 @@
         index: 0,
         size: 10,
         preFix: '../',
+        jsonUrl: '../wwwroot/data/match.data.json',
         init: function () {
             this.id = this.getQueryString('id');
             this.source = window.parent.MyResult.sourceImage;
@@ -85,16 +87,18 @@
             this.initSearchEvent();
             this.initPreEvent();
             this.initNextEvent();
+            this.exportEvent();
         },
         //以图搜图
         renderDetail: function (id) {
             var that = this;
             var param = window.parent.MyResult.param;
             // 默认使用post  $.axios('../wwwroot/data/match.data.json', param, "post")
-            $.axios('../wwwroot/data/match.data.json')
+            $.axios(MyConfig.getMatchAllUrl(), param, "post")
                 .then(function (response) {
-                    var data = response.data.data;
+                    var data = response.data.result;
                     var list = data.list;
+                    list = MyConfig.mapToMatch(list);
                     for (var index = 0; index < list.length; index++) {
                         var item = list[index];
                         if (item.id == id) {
@@ -171,18 +175,19 @@
         getNextTable: function () {
             var that = this;
             var param = window.parent.MyResult.param;
-            param.page = this.page;
-            param.size = this.size;
+            param.pageNo = this.page;
+            param.pageSize = this.size;
             var isNewPage = false;
             if (this.index + 1 >= this.size) {
-                param.page = param.page + 1;
+                param.pageNo = param.pageNo + 1;
                 isNewPage = true;
             }
             // 默认使用post  $.axios('../wwwroot/data/match.data.json', param, "post")
-            $.axios('../wwwroot/data/match.data.json')
+            $.axios(MyConfig.getMatchUrl(), param, "post")
                 .then(function (response) {
-                    var data = response.data.data;
+                    var data = response.data.result;
                     var list = data.list;
+                    list = MyConfig.mapToMatch(list);
                     var item = {};
                     var currentIndex = 0;
                     if (list.length > 0) {
@@ -199,7 +204,7 @@
                                 }
                             }
                         }
-                        that.page = param.page;
+                        that.page = param.pageNo;
                         that.index = currentIndex;
                     }
                     //不为空 且有属性
@@ -213,22 +218,24 @@
         getPreTable: function () {
             var that = this;
             var param = window.parent.MyResult.param;
-            param.page = this.page;
-            param.size = this.size;
+            param.pageNo = this.page;
+            param.pageSize = this.size;
             var isNewPage = false;
             //第一页 且 是第一个 直接返回
             if (this.page == 1 && this.index == 0) {
                 return;
             }
             if (this.index - 1 < 0) {
-                param.page = param.page - 1;
+                param.pageNo = param.pageNo - 1;
                 isNewPage = true;
             }
             // 默认使用post  $.axios('../wwwroot/data/match.data.json', param, "post")
-            $.axios('../wwwroot/data/match.data.json')
+            //$.axios(this.jsonUrl)
+            $.axios(MyConfig.getMatchUrl(), param, "post")
                 .then(function (response) {
-                    var data = response.data.data;
+                    var data = response.data.result;
                     var list = data.list;
+                    list = MyConfig.mapToMatch(list);
                     var item = {};
                     var currentIndex = 0;
                     if (list.length > 0) {
@@ -245,7 +252,7 @@
                                 }
                             }
                         }
-                        that.page = param.page;
+                        that.page = param.pageNo;
                         that.index = currentIndex;
                     }
                     //不为空 且有属性
@@ -256,6 +263,13 @@
 
                 });
 
+        },
+        //导出事件
+        exportEvent: function () {
+            var that = this;
+            $('.export-btn').click(function (e) {
+                MyImageDownload.download(that.preFix + that.item.url, that.item.name);
+            });
         }
     };
 </script>

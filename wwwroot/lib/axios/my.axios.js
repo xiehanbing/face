@@ -153,14 +153,14 @@ jQuery.extend({
               return;
             }
           }
-          if (response.data != null && !response.data.status) {
+          if (response.data != null && !response.data.success) {
             // vue.$Loading.error();
             var message = response.data.message || "操作失败";
             if (message != null) {
               MsgBoxAlert(message);
             }
           }
-          if (response.data.status) {
+          if (response.data.success) {
             // vue.$Loading.finish();
             resolve(response);
           }

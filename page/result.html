@@ -56,7 +56,7 @@
                     <span class="content-target-title">条</span>
                 </div>
                 <div class="content-target-data-box">
-                    <div class="content-target-data-item-box">
+                    <!-- <div class="content-target-data-item-box">
                         <div class="content-target-data-item-image-box">
                             <img class="content-target-data-item-image" src="/wwwroot/image/demo.png" />
                         </div>
@@ -80,7 +80,7 @@
                                 <span class="camera-match-title small">.65</span>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <!-- 分页 -->
                 <div class="content-target-data-page-box clearBoth">
@@ -103,6 +103,8 @@
 <script src="../wwwroot/lib/spage/static/jquery.sPage.min.js"></script>
 <script src="../wwwroot/lib/dialog/jquery.dialog.js" type="text/javascript" charset="utf8"></script>
 <script type="text/javascript" src="../wwwroot/lib/zoom/changeZoom.js"></script>
+<script type="text/javascript" src="../wwwroot/project/config.js"></script>
+<script type="text/javascript" src="../wwwroot/lib/image.download.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         MyResult.init();
@@ -125,15 +127,32 @@
             sex: "",
             withGlass: ''
         },
-        sourceImage: '/wwwroot/image/demo.png',
+        sourceImage: '',
+        sourceImageName: '',
         preFix: '../',
+        jsonUrl: '../wwwroot/data/match.data.json',
         init: function () {
+            this.initSourceBox();
             this.renderFilterCondition();
             this.renderImageLevel();
             this.initExport();
             this.initLocus();
+            this.initDefaultRequest();
             this.getTable();
             this.initItemBoxEvent();
+        },
+        initSourceBox: function () {
+            if (this.sourceImage == null || this.sourceImage == '') {
+                $('.content-source-box').css('visibility', 'hidden');
+            } else {
+                $('.content-source-box').css('visibility', '');
+            }
+        },
+        initDefaultRequest: function () {
+            this.param.startTime = '2020-05-08 00:00';
+            this.param.endTime = '2020-05-16 00:00';
+            this.param.minSimilarity = '1';
+            this.param.maxSimilarity = '100';
         },
         // 设置请求参数
         configRequest: function (options) {
@@ -141,6 +160,7 @@
             if (options.name != null) {
                 $('.content-source-image-title').html(options.name);
                 this.param.cameraIndexCodes = [options.code];
+                this.sourceImageName = options.name;
             }
             if (options.facePicUrl != null) {
                 $('.content-source-image').attr('src', this.preFix + options.facePicUrl);
@@ -179,6 +199,17 @@
             if (options.withGlass != null) {
                 this.param.withGlass = options.withGlass;
             }
+            this.initSourceBox();
+            if (this.param.startTime == null || this.param.endTime == null || this.param.startTime == '' || this
+                .param
+                .endTime == '') {
+                MsgBoxAlert('未选择时间,请在检索条件中选择时间');
+                return;
+            }
+            if (this.param.minSimilarity == null || this.param.minSimilarity == '') {
+                MsgBoxAlert('未输入最小相似度,请在检索条件中输入最小相似度');
+                return;
+            }
             //重新设置分页
             this.page = 1;
             this.getTable();
@@ -190,8 +221,18 @@
             });
         },
         initExport: function () {
+            var that = this;
             $('.tool-btn-export').click(function (event) {
-                console.log('click export');
+                // console.log('click export');
+                var imageData = that.sourceImage;
+                if (imageData.indexOf('data') < 0 && imageData.indexOf('http') < 0) {
+                    imageData = that.preFix + that.sourceImage
+                }
+                var imageName = that.sourceImageName;
+                if (imageName == null || imageName == '') {
+                    imageName = '结构化查询'
+                }
+                MyImageDownload.download(imageData, imageName);
             });
         },
         renderFilterCondition: function () {
@@ -200,17 +241,7 @@
             //∨ ∧
             this.filterCondition.click(function (e) {
                 var status = $(this).attr('current-status');
-                // if (status == 'close') {
-                //点击 打开事件
-                // $('.filter-condition-arrow').html('∧');
-                // $(this).attr('current-status', 'open');
-
                 showDialog('index.html', '检索条件');
-
-                //} else {
-                //  $('.filter-condition-arrow').html('∨');
-                // $(this).attr('current-status', 'close');
-                //}
             });
         },
         renderImageLevel: function () {
@@ -225,15 +256,24 @@
         // 获取数据列表
         getTable: function () {
             var that = this;
-            this.param.page = this.page;
-            this.param.size = this.size;
-            // 默认使用post  $.axios('../wwwroot/data/match.data.json', param, "post")
-            $.axios('../wwwroot/data/match.data.json')
+            this.param.pageNo = this.page;
+            this.param.pageSize = this.size;
+            // 默认使用post 
+            $.axios(MyConfig.getMatchUrl(), this.param, "post")
+                //$.axios(this.jsonUrl)
                 .then(function (response) {
-                    var data = response.data.data;
+                    var data = response.data.result;
                     var list = data.list;
                     var total = data.total;
-
+                    list = list.map(function (item) {
+                        return {
+                            similarity: item.similarity,
+                            time: item.captureTime,
+                            name: item.cameraName,
+                            url: item.facePicUrl,
+                            id: item.cameraIndexCode
+                        };
+                    });
                     that.renderTable(list);
                     that.initPage(total);
                 });
@@ -243,12 +283,6 @@
             var fullHtml = '';
             for (var i = 0; i < list.length; i++) {
                 var detail = list[i];
-                // var detail = {
-                //     url: '/wwwroot/image/demo.png',
-                //     name: '68相机' + (i + 1),
-                //     time: '2020-4-20 11:48:02',
-                //     matchResult: (98.65 - i)
-                // };
                 var matchResult = detail.similarity;
                 var matchFirst, matchSecond;
                 if (matchResult == null) {
@@ -264,6 +298,10 @@
                     }
                 }
                 var time = detail.time;
+                time = time.replace('+08:00', '').replace('T', " ");
+                var pointIndex = time.indexOf('.');
+                if (pointIndex >= 0)
+                    time = time.substr(0, pointIndex);
                 var name = detail.name;
                 var url = this.preFix + detail.url;
                 var id = detail.id;

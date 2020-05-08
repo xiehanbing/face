@@ -87,6 +87,8 @@ body {
     border: solid 1px #32b2ec;
     width: 320px;
     height: 407px;
+    overflow: auto;
+    /*当内容超过，出现滚动条*/
 }
 
 .camera-other-icon {

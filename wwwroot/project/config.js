@@ -1,9 +1,9 @@
 //配置
 var MyConfig = {
-  allCameraUrl: "http://192.168.56.1:8015/api/camera/cameras/all/test", //获取所有监控点资源
-  matchUrl: "http://192.168.56.1:8015/api/face/capture/test", //以图搜图
-  matchAllUrl: "http://192.168.56.1:8015/api/face/capture/test/all",
-  baseUrl: "http://192.168.56.1:8015",
+  allCameraUrl: "api/camera/cameras/all/test", //获取所有监控点资源
+  matchUrl: "api/face/capture/test", //以图搜图
+  matchAllUrl: "api/face/capture/test/all",
+  baseUrl: "http://116.62.58.28/general.api", //http://192.168.56.1:8015
   getAllCameraUrl: function () {
     if (this.allCameraUrl.indexOf("http") < 0) {
       return this.baseUrl + "/" + this.allCameraUrl;

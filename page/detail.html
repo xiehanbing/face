@@ -61,6 +61,7 @@
 <script type="text/javascript" src="../wwwroot/lib/message/MsgBox.js" charset="utf8"></script>
 <script type="text/javascript" src="../wwwroot/project/detail/index.js"></script>
 <script type="text/javascript" src="../wwwroot/project/config.js"></script>
+<script type="text/javascript" src="../wwwroot/lib/canvas-toBlob.js"></script>
 <script type="text/javascript" src="../wwwroot/lib/image.download.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
@@ -140,7 +141,7 @@
             $('.camera-data').html(name);
         },
         //获取参数
-        getQueryString(name) {
+        getQueryString: function (name) {
             var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
             var r = window.location.search.substr(1).match(reg);
             if (r != null) {

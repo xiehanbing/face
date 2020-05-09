@@ -172,6 +172,8 @@
                 this.param.facePicBinaryData = options.facePicBinaryData;
                 $('.content-source-image').attr('src', options.facePicBinaryData);
                 this.sourceImage = options.facePicBinaryData;
+                this.sourceImageName = '';
+                $('.content-source-image-title').html('');
             }
             if (options.cameraIndexCodes != null) {
                 this.param.cameraIndexCodes = options.cameraIndexCodes;
